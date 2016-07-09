@@ -1,5 +1,7 @@
 var Hosts = require('./hosts');
 console.log(process.env.SkipWatcher);
+console.log(process.env.NotBlockingWatcher);
+
 if (process.env.SkipWatcher)
 return require('./bin/www');
 
