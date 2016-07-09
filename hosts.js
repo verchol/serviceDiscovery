@@ -7,7 +7,7 @@ var fs           = require('fs');
 function Hosts(fileToWatch){
   EventEmitter.call(this);
   this.fileToWatch = fileToWatch ||  '/opt/codefresh/container-map';
-  console.log(`{file to watch}`, fileToWatch);
+  debug(`{file to watch}`, fileToWatch);
 }
 util.inherits(Hosts, EventEmitter);
 Hosts.prototype.getData = function(){

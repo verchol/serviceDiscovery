@@ -2,7 +2,8 @@ var express = require('express');
 var router = express.Router();
 var Hosts  = require('../hosts');
 var hosts = new Hosts(process.env.FILE_TO_WATCH);
-
+var debug = require('debug')('route->index');
+var _     = require('lodash');
 /* GET home page. */
 router.get('/hosts', function(req, res, next) {
   if (hosts.isReady())
@@ -10,17 +11,26 @@ router.get('/hosts', function(req, res, next) {
     return res.render('index', { title: hosts.data });
   }
 
-  return res.send('No data still created');
+  return res.send ('No data still created');
 
 });
 router.get('/watch', (req, res, next)=>{
   hosts.watchFile(1000).then((data)=>{
+    var port = "PORT=" + _.random(1111,9999);
+     /*var envs = [port,
+                 "codefresh_app_410ud7ywb_8080=http://192.168.99.100:32786",
 
+               "codefresh_app_410ud7ywb_9000=http://192.168.99.100:22351"]*/
+      debug('running app');
+      data.push(port);
+      var runner = new Runner('node ./bin/www', data);
+      runner.run().then(done , done);
   }).catch((e)=>{
+    debug(e);
     next(e);
   })
 
-    return res.render('watch', {});
+    return res.send('stared watch on ' + process.env.FILE_TO_WATCH);
 });
 router.get('/', function(req, res, next) {
    return res.render('index', { title: 'oleg' });
