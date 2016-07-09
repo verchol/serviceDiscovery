@@ -17,7 +17,10 @@ function Runner(cmd, lines){
    });
    debug('envs = ' + JSON.stringify(this.env));
 }
+Runner.prototype.ls = function(){
 
+   
+}
 Runner.prototype.run = function(){
   const exec = require('child_process').exec;
   var self = this;

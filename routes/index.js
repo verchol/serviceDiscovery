@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var Hosts  = require('../hosts');
+var path   = require('path');
 
 var debug = require('debug')('route->index');
 var _     = require('lodash');
@@ -12,6 +13,16 @@ router.get('/hosts', function(req, res, next) {
   }
 
   return res.send (400);
+
+});
+router.get('/ls', function(req, res, next) {
+   var shelljs = require('shelljs');
+   var files = "";
+   debug(path.dirname(Hosts.fileToWatch));
+   shelljs.ls(path.dirname(Hosts.fileToWatch)).forEach(function(file) {
+     files = files + "\n" + file;
+   });
+  return res.send (files);
 
 });
 router.get('/watch', (req, res, next)=>{
