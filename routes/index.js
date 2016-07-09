@@ -25,6 +25,14 @@ router.get('/ls', function(req, res, next) {
   return res.send (files);
 
 });
+router.get('/cat', function(req, res, next) {
+   var shelljs = require('shelljs');
+ 
+   debug(path.dirname(Hosts.fileToWatch));
+   var output = shelljs.cat(Hosts.fileToWatch)
+  return res.send (output);
+
+});
 router.get('/watch', (req, res, next)=>{
   hosts.watchFile(1000).then((data)=>{
     var port = "PORT=" + _.random(1111,9999);
