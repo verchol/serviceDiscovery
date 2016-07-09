@@ -32,8 +32,6 @@ describe('read and parse file', ()=>{
     })
     .on('end', function () {
       console.log('end os stream');
-
-
       console.log(`data len = ${data.length} data:` + buffer.toString('utf8'));
       done();
     });
