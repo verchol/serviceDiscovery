@@ -8,13 +8,19 @@ describe('Hosts unit tests' , ()=>{
   it('watch file ', (done)=>{
 
     var hosts = new Hosts(fileToWatch);
-    hosts.readFile();
+    hosts.watchFile();
     hosts.onReady((event)=>{
       console.log(`a new hosts is here ${event.data}`);
       done();
     });
+  })
 
-
+  it.only('getData by using promise', (done)=>{
+      var hosts = new Hosts(fileToWatch);
+      hosts.watchFile().then((data)=>{
+        console.log(data);
+        done()
+      }, done);
   })
 
 
