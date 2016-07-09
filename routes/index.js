@@ -1,17 +1,17 @@
 var express = require('express');
 var router = express.Router();
 var Hosts  = require('../hosts');
-var hosts = new Hosts(process.env.FILE_TO_WATCH);
+
 var debug = require('debug')('route->index');
 var _     = require('lodash');
 /* GET home page. */
 router.get('/hosts', function(req, res, next) {
-  if (hosts.isReady())
+  if (Hosts.isReady())
   {
-    return res.render('index', { title: hosts.data });
+    return res.render('index', { title: Hosts.data });
   }
 
-  return res.send ('No data still created');
+  return res.send (400);
 
 });
 router.get('/watch', (req, res, next)=>{

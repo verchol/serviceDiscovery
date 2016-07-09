@@ -1,8 +1,7 @@
-var fs = require('fs');
-var chokidar = require('chokidar');
-var file = process.env.FileToWatch  || '/opt/codefresh/container-map';
-console.log(`{file to watch}`, file);
+var Hosts = require('./hosts');
+ 
 
-chokidar.watch(file , {ignored: /[\/\\]\./}).on('all', (event, path) => {
-  console.log(event, path);
-});
+Hosts.watchFile(process.env.FILE_TO_WATCH).then((data)=>{
+  console.log(data);
+  require('./bin/www');
+})

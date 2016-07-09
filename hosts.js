@@ -4,7 +4,12 @@ var EventEmitter = require('events');
 var debug        = require('debug')('Hosts');
 var fs           = require('fs');
 
+var _Hosts;
 function Hosts(fileToWatch){
+  if (_Hosts){
+    return _Hosts;
+  }
+
   EventEmitter.call(this);
   this.fileToWatch = fileToWatch ||  '/opt/codefresh/container-map';
   debug(`{file to watch}`, fileToWatch);
@@ -13,6 +18,12 @@ util.inherits(Hosts, EventEmitter);
 Hosts.prototype.getData = function(){
   debug(`getData ${data}`);
   return this.data;
+}
+Hosts.prototype.wait = function(){
+  this.on('onReady', ()=>{
+
+  })
+
 }
 Hosts.prototype.isReady = function(){
   return this.data && this.data.length > 0;
@@ -28,7 +39,9 @@ Hosts.prototype.retry = function(times)
  })
 
 }
-Hosts.prototype.watchFile = function (period){
+Hosts.prototype.watchFile = function (fileToWatch){
+
+  this.fileToWatch =  fileToWatch || '/opt/codefresh/container-map';
   console.log(`start watching ${this.fileToWatch}`);
   const self = this;
   this.data = undefined;
@@ -36,7 +49,8 @@ Hosts.prototype.watchFile = function (period){
   var p = new Promise((resolve , reject)=>{
       if (self.data)
         return resolve(data);
-      chokidar.watch(this.fileToWatch , {ignored: /[\/\\]\./}).on('add', (path) => {
+      self.watcher = chokidar.watch(this.fileToWatch , {ignored: /[\/\\]\./});
+      self.watcher.on('add', (path) => {
 
         debug(`onReady event triggered: ${path}`);
         fs.readFile(path, (err, data)=>{
@@ -59,9 +73,15 @@ Hosts.prototype.onReady = function(callback){
   debug('subscribe to onReady');
   this.on('onReady', callback);
 }
+Hosts.prototype.reset = function(){
+   debug('resetting');
+  this.data = undefined;
+  this.watcher.unwatch(this.fileToWatch);
+  this.fileToWatch = undefined;
 
+}
 Hosts.prototype.convertToEnvars = ()=>{
 
 }
-
-module.exports = Hosts;
+_Hosts = new Hosts();
+module.exports = _Hosts;
