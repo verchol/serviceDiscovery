@@ -4,8 +4,8 @@ var _     = require('lodash');
 module.exports.unwatch = function(){
   Hosts.reset();
 }
-module.exports.data = function(){
-  return Hosts.data;
+module.exports.model = function(){
+  return Hosts;
 }
 module.exports.watch  = function (fileToWatch, startFile, callback){
 debug('typeof callback ' + typeof callback);
