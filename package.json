@@ -1,9 +1,9 @@
 {
-  "name": "helpeo",
-  "version": "0.0.0",
-  "private": true,
+  "name": "serviceDiscovery",
+  "version": "0.0.1",
+  "private": false,
   "scripts": {
-    "start": "node ./bin/www"
+    "start": "node ./index"
   },
   "dependencies": {
     "body-parser": "~1.13.2",
