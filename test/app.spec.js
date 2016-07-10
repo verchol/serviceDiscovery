@@ -4,6 +4,7 @@ describe('run as extenran package', ()=>{
       var Index = require('../index');
       Index.watch('./tmp/container-map',  (err, data)=>{
         console.log(data);
+        Index.reset();
         done();
       })
     })
