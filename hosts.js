@@ -3,6 +3,8 @@ var util         = require('util');
 var EventEmitter = require('events');
 var debug        = require('debug')('Hosts');
 var fs           = require('fs');
+var path         = require('path');
+var mkdirp       = require('mkdirp');
 
 var _Hosts;
 function Hosts(fileToWatch){
@@ -42,6 +44,11 @@ Hosts.prototype.retry = function(times)
 Hosts.prototype.watchFile = function (fileToWatch){
 
   this.fileToWatch =  fileToWatch || '/opt/codefresh/container-map';
+  var dirToWatch = path.dirname(this.fileToWatch);
+  if (!fs.existsSync(dirToWatch)){
+    debug(`created folder to watch: ${dirToWatch}`);
+    mkdirp.sync(dirToWatch);
+  }
   console.log(`start watching ${this.fileToWatch}`);
   const self = this;
   this.data = undefined;
@@ -50,7 +57,7 @@ Hosts.prototype.watchFile = function (fileToWatch){
       if (self.data)
         return resolve(data);
       self.watcher = chokidar.watch(this.fileToWatch , {ignored: /[\/\\]\./});
-      self.watcher.on('add', (path) => {
+      self.watcher.on('change', (path) => {
 
         debug(`onReady event triggered: ${path}`);
         fs.readFile(path, (err, data)=>{

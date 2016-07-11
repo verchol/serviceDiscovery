@@ -2,7 +2,7 @@ var assert = require('assert');
 
 describe('Hosts unit tests' , ()=>{
   var Hosts = require('../hosts');
-  const fileToWatch   = './tmp/container-map';
+  const fileToWatch   = './tmp/run1/container-map';
   afterEach((done)=>{
     console.log('afterEach start');
     var fs = require('fs');
