@@ -3,6 +3,7 @@ describe('run as extenrnal package', ()=>{
 
     var Index = require('../index');
     afterEach(()=>{
+        console.log('afterEach');
         Index.unwatch();
     })
     it('watch', (done)=>{
@@ -28,15 +29,18 @@ describe('run as extenrnal package', ()=>{
 
     })
 
-    it.only('get Model', (done)=>{
+    it('get Model', (done)=>{
+        var assert = require('assert');
 
         Index.watch('./tmp/container-map', (err, data)=>{
          console.log('getting model');
-
          var model = Index.model();
          console.log(`model ${JSON.stringify(model)}`);
          assert(model);
-        done();
+
+
+          console.log('done');
+          done();
       })
 
     })
