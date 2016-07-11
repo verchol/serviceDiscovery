@@ -19,7 +19,7 @@ Parser.prototype.whoami = function(){
 Parser.prototype.parseSelfEntries = function(){
   var self = this;
   var selfEntry = this.hosts.self.entry;
-
+  debug('Entries' + this.hosts.entries);
   var selfEntries = _.filter(this.hosts.entries, (d)=>{
     debug(`parseSelfEntries-> entry ${d}`);
     var entries = d.split('=');

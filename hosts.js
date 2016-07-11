@@ -12,7 +12,7 @@ function Hosts(fileToWatch){
 
   EventEmitter.call(this);
   this.fileToWatch = fileToWatch ||  '/opt/codefresh/container-map';
-  debug(`{file to watch}`, fileToWatch);
+  debug(`{fileToWatch}`, fileToWatch);
 }
 util.inherits(Hosts, EventEmitter);
 Hosts.prototype.getData = function(){
@@ -58,9 +58,11 @@ Hosts.prototype.watchFile = function (fileToWatch){
           if (err)
             return reject(err);
             var data = data.toString('utf8');
-            self.data = data;
+
             var lines = data.split(/\r?\n/);
+            self.data = lines;
             debug(`lines = ${lines}`);
+
             self.emit('onReady', {path: path, data:lines});
             return resolve(data);
         })
@@ -74,10 +76,12 @@ Hosts.prototype.onReady = function(callback){
   this.on('onReady', callback);
 }
 Hosts.prototype.reset = function(){
-   debug('resetting');
+
+  debug('unwatching');
   this.data = undefined;
   this.watcher.unwatch(this.fileToWatch);
   this.fileToWatch = undefined;
+  debug('unwatched');
 
 }
 Hosts.prototype.convertToEnvars = ()=>{

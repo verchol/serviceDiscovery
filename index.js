@@ -1,11 +1,18 @@
-var Hosts = require('./hosts');
-var debug = require('debug')('serviceDiscovery->Index');
-var _     = require('lodash');
+var Hosts   = require('./hosts');
+var debug   = require('debug')('serviceDiscovery->Index');
+var _       = require('lodash');
+var Parser  = require('./parser');
+
+
 module.exports.unwatch = function(){
   Hosts.reset();
 }
 module.exports.model = function(){
-  return Hosts;
+  debug(`get model : ${JSON.stringify(model)}`);
+  p = new Parser(Hosts.data);
+  debug(`Data: ${Hosts.data}`);
+  var model = p.parse(Hosts.data).parseSelfEntries();
+  return model.hosts.self.portMapping;
 }
 module.exports.watch  = function (fileToWatch, startFile, callback){
 debug('typeof callback ' + typeof callback);

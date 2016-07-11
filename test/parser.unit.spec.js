@@ -27,10 +27,15 @@ describe('parser test', ()=>{
    it('parse self entries', ()=>{
 
        var p = new Parser(testData);
-       p.parse(testData).parseSelfEntries();
+       p.parse(testData).then(()=>{
+         console.log('-------------')
+         console.log(Hosts.data);
+         console.log('-------------')
+       } ,done);
        console.log('portMapping:'  + JSON.stringify(p.hosts.self.portMapping));
        assert(p.hosts.self.portMapping["8080"]);
        assert.equal(p.hosts.self.portMapping["8080"], "http://192.168.99.100:32786");
+
    });
 
 
