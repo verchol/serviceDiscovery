@@ -2,7 +2,7 @@ var assert = require('assert');
 
 describe('Hosts unit tests' , ()=>{
   var Hosts = require('../hosts');
-  const fileToWatch   = './tmp/run1/container-map';
+  var fileToWatch   = './tmp/run1/container-map';
   afterEach((done)=>{
     console.log('afterEach start');
     var fs = require('fs');
@@ -32,6 +32,7 @@ describe('Hosts unit tests' , ()=>{
   })
 
   it.only('get Model ', (done)=>{
+    fileToWatch   = '/opt/codefresh/container-map';
     Hosts.watchFile(fileToWatch).then((data)=>{
 
       console.log('triggered watch');

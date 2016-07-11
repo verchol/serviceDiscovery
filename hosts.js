@@ -57,7 +57,7 @@ Hosts.prototype.watchFile = function (fileToWatch){
       if (self.data)
         return resolve(data);
       self.watcher = chokidar.watch(this.fileToWatch , {ignored: /[\/\\]\./});
-      self.watcher.on('change', (path) => {
+      self.watcher.on('add', (path) => {
 
         debug(`onReady event triggered: ${path}`);
         fs.readFile(path, (err, data)=>{
