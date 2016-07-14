@@ -8,11 +8,28 @@ module.exports.unwatch = function(){
   Hosts.reset();
 }
 module.exports.model = function(){
-  debug(`get model : ${JSON.stringify(model)}`);
+
   p = new Parser(Hosts.data);
   debug(`Data: ${Hosts.data}`);
-  var model = p.parse(Hosts.data).parseSelfEntries();
-  return model.hosts.self.portMapping;
+  var model = {};
+  try{
+    p.parse(Hosts.data).parseEntries();
+    debug('initialize model');
+    model.self =  p.hosts.self;
+    model.others = p.hosts.others;
+    model.all= {};
+    _.forEach(p.hosts.all, (obj)=>{
+      debug(`all : ${JSON.stringify(obj)}`);
+      model.all[obj.serviceName + "_" +  obj.internalPort]= obj.publicUrl;
+    })
+
+  }catch(e){
+    console.log('error:' + e);
+  }
+
+  debug(`get model : ${JSON.stringify(model)}`);
+
+  return model;
 }
 module.exports.watch  = function (fileToWatch, startFile, callback){
 debug('typeof callback ' + typeof callback);

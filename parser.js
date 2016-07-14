@@ -1,11 +1,19 @@
 var _       = require('lodash')
 var debug   = require('debug')('parser');
 var assert  = require('assert');
-
+var EventEmitter = require('events');
+var util    = require('util');
 
 function Parser(){
+ EventEmitter.call(this);
  this.hosts = {entries: [], self: {}};
+ _.set(this.hosts, "self.portMapping", {});
+ _.set(this.hosts, "others.portMapping", {});
+ _.set(this.hosts, "all", []);
+
 }
+util.inherits(Parser, EventEmitter);
+
 
 Parser.prototype.whoami = function(){
   var data = this.data;
@@ -16,62 +24,89 @@ Parser.prototype.whoami = function(){
   })
   return this;
 }
-Parser.prototype.parseSelfEntries = function(){
+Parser.prototype.parseEntries = function(){
+
   var self = this;
   var selfEntry = this.hosts.self.entry;
   debug('Entries' + this.hosts.entries);
-  var selfEntries = _.filter(this.hosts.entries, (d)=>{
-    debug(`parseSelfEntries-> entry ${d}`);
-    var entries = d.split('=');
-    if (entries[0].indexOf(selfEntry) === -1)
-         return false;
 
-    return true;
-  });
-  debug(`selfService : `  + JSON.stringify(selfEntries));
-  this.hosts.selfEntries = selfEntries;
-  _.forEach(selfEntries,(se) =>{
+
+  //this.hosts.selfEntries = selfEntries;
+  _.forEach(this.hosts.entries,(se) =>{
     debug(`self entry ${se} about to be parsed`);
-    self.parseEntry(se);
+    var entries = se.split('=');
+    if (entries[0] === "self"){
+    debug('no need to parse self entry');
+    return;
+    }
+
+    var obj = self.parseEntry(se);
+
+    if (entries[0].indexOf(selfEntry) === -1){
+       this.hosts.others.portMapping[obj.internalPort] = obj.publicUrl;
+    }else
+      this.hosts.self.portMapping[obj.internalPort] = obj.publicUrl;
+    
+      this.hosts.all.push(obj);
+
   })
+
+  debug(`finished parsing all entries , self.mappings : ${JSON.stringify(this.hosts.self.portMapping)}`)
   return this;
 }
-
+//TODO : validate the entry
+function validate(entry){}
 Parser.prototype.parseEntry = function(entry){
-  debug(`entry:${entry}`);
+  debug(`parseEntry->entry:${entry}`);
+
+
   var keys = entry.split("=");
   assert(keys.length === 2);
 
   var publicUrl = keys[1];
   var leftParts = keys[0].split("_");
-  var internaPort = _.last(leftParts);
+  var internalPort = _.last(leftParts);
   var onlyName = keys.slice(1, keys.length - 1);
-  var name= keys[0];
-  _.forEach(onlyName , (n)=>{
-    name = name + "_" +  n;
-  });
-  if (!_.get(this, "hosts.self.portMapping"))
-  this.hosts.self.portMapping  = {};
-  this.hosts.self.portMapping[internaPort] = publicUrl;
+  var serviceName = leftParts[1];
 
-  return this;
-}
+
+
+
+  var obj = {entry: entry};
+  obj.internalPort  = internalPort;
+  obj.publicUrl = publicUrl;
+  obj.serviceName = serviceName;
+
+  debug(`obj ${JSON.stringify(obj)}`);
+  this.emit('entry', obj);
+  return obj;
+
+
+
+ }
 Parser.prototype.parse = function(data){
     var self = this;
   _.forEach(data, (d)=>{
     var entries = d.split('=');
     debug(`entry is ${d}`);
+    if (entries[0] === "default"){
+       return;
+    }
     if (entries[0] === "self"){
 
       debug(`self is ${entries[1]}`);
       self.hosts.self.entry = entries[1];
 
     }else {
+      if(d === "" || d.length === 0){
+        return;
+      }
+
       this.hosts.entries.push(d);
     }
   })
 
-  debug('end of parse');
+  debug(`end of parse : ${JSON.stringify(this.hosts.entries)})`);
   return this;
 }
 
